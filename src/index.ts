@@ -90,3 +90,138 @@ const code: Bytecode = [
 ];
 
 run(code);
+
+type Token =
+  | NumberToken
+  | IdentifierToken
+  | PlusToken
+  | LParenToken
+  | RParenToken;
+
+interface NumberToken {
+  type: "NUMBER";
+  value: number;
+}
+
+interface IdentifierToken {
+  type: "IDENTIFIER";
+  value: string;
+}
+
+interface PlusToken {
+  type: "PLUS";
+}
+
+interface LParenToken {
+  type: "LPAREN";
+}
+
+interface RParenToken {
+  type: "RPAREN";
+}
+
+function parse(tokens: Token[]): AST {
+  let position: number = 0;
+
+  return parse();
+
+  function peek(): Token {
+    return tokens[position]!;
+  }
+
+  function advance(): Token {
+    return tokens[position++]!;
+  }
+
+  function parseNumber(): Number {
+    const token: Token = advance();
+
+    return {
+      type: "Number",
+      value: (token as NumberToken).value
+    };
+  }
+
+  function parseAdd(): Add {
+    let left: Number | Add = parsePrimary() as Number;
+
+    while (peek().type === "PLUS") {
+      advance();
+
+      const right: Number | Add = parsePrimary() as Number;
+
+      left = {
+        type: "Add",
+        left,
+        right
+      };
+
+      return left;
+    }
+
+    throw new Error("NEEDS HANDLING NOW 👹"); // temp
+  }
+
+  function parsePrimary(): Number | Add {
+    const token = peek();
+
+    if (token.type === "NUMBER") {
+      return parseNumber();
+    }
+
+    if (token.type === "LPAREN") {
+      advance(); // consume (
+
+      const expression: Add = parseAdd();
+
+      if (peek().type !== "RPAREN") {
+        throw new Error("Expected ')'");
+      }
+
+      advance(); // consume )
+
+      return expression;
+    }
+
+    throw new Error(`Unexpected token ${token.type}`);
+  }
+
+  function parsePrint(): Print {
+    advance(); // consume "print"
+
+    advance(); // consume (
+
+    const value: Add = parseAdd();
+
+    advance(); // consume )
+
+    return {
+      type: "Print",
+      value
+    };
+  }
+
+  function parse(): AST {
+    const token: Token = peek();
+
+    if (
+      token.type === "IDENTIFIER" &&
+      token.value === "print"
+    ) {
+      return parsePrint();
+    }
+
+    throw new Error("Expected statement");
+  }
+}
+
+const tokens: Token[] = [
+  { type: "IDENTIFIER", value: "print" },
+  { type: "LPAREN" },
+  { type: "NUMBER", value: 5 },
+  { type: "PLUS" },
+  { type: "NUMBER", value: 7 },
+  { type: "RPAREN" }
+];
+
+run([...compile(parse(tokens)), "HALT"]);
