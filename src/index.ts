@@ -30,3 +30,63 @@ run([
   "PRINT",
   "HALT"
 ]);
+
+type AST = Number | Add | Print;
+
+interface Number {
+  type: "Number";
+  value: number;
+}
+
+interface Add {
+  type: "Add";
+  left: Number;
+  right: Number;
+}
+
+interface Print {
+  type: "Print";
+  value: Number | Add;
+}
+
+function compile(ast: AST): Bytecode {
+  switch (ast.type) {
+    case "Number":
+      return ["PUSH", ast.value];
+
+    case "Add":
+      return [
+        ...compile(ast.left),
+        ...compile(ast.right),
+        "ADD"
+      ];
+
+    case "Print":
+      return [
+        ...compile(ast.value),
+        "PRINT"
+      ];
+  }
+}
+
+const ast: AST = {
+  type: "Print",
+  value: {
+    type: "Add",
+    left: {
+      type: "Number",
+      value: 5
+    },
+    right: {
+      type: "Number",
+      value: 7
+    }
+  }
+};
+
+const code: Bytecode = [
+  ...compile(ast),
+  "HALT"
+];
+
+run(code);
