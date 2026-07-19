@@ -1,4 +1,4 @@
-type Inst = "PUSH" | "ADD" | "PRINT" | "HALT";
+type Inst = "PUSH" | "ADD" | "MUL" | "PRINT" | "HALT";
 type Bytecode = (number | Inst)[];
 type Stack = (number | Inst)[];
 
@@ -13,6 +13,9 @@ function run(bytecode: Bytecode) {
         break;
       case "ADD":
         stack.push((stack.pop()! as number) + (stack.pop()! as number));
+        break;
+      case "MUL":
+        stack.push((stack.pop()! as number) * (stack.pop()! as number));
         break;
       case "PRINT":
         console.log(stack.pop());
@@ -42,7 +45,7 @@ interface Number {
 
 interface BinaryExpression {
   type: "BinaryExpression";
-  operator: "Add";
+  operator: "Add" | "Multiply";
   left: Number;
   right: Number;
 }
@@ -64,6 +67,13 @@ function compile(ast: AST): Bytecode {
             ...compile(ast.left),
             ...compile(ast.right),
             "ADD"
+          ];
+
+        case "Multiply":
+          return [
+            ...compile(ast.left),
+            ...compile(ast.right),
+            "MUL"
           ];
       }
 
@@ -102,6 +112,7 @@ type Token =
   | NumberToken
   | IdentifierToken
   | PlusToken
+  | StarToken
   | LParenToken
   | RParenToken;
 
@@ -117,6 +128,10 @@ interface IdentifierToken {
 
 interface PlusToken {
   type: "PLUS";
+}
+
+interface StarToken {
+  type: "STAR";
 }
 
 interface LParenToken {
@@ -167,7 +182,22 @@ function parse(tokens: Token[]): AST {
       return left;
     }
 
-    throw new Error("NEEDS HANDLING NOW 👹"); // temp
+    while (peek().type === "STAR") {
+      advance();
+
+      const right: Number | BinaryExpression = parsePrimary() as Number;
+
+      left = {
+        type: "BinaryExpression",
+        operator: "Multiply",
+        left,
+        right
+      };
+
+      return left;
+    }
+
+    throw new Error(`Unexpected operator ${peek().type}`);
   }
 
   function parsePrimary(): Number | BinaryExpression {
@@ -313,6 +343,11 @@ function tokenize(source: string): Token[] {
         advance();
         break;
 
+      case "*":
+        tokens.push({ type: "STAR" });
+        advance();
+        break;
+
       case "(":
         tokens.push({ type: "LPAREN" });
         advance();
@@ -334,3 +369,5 @@ function tokenize(source: string): Token[] {
 const source: string = "print(5 + 7)";
 
 run([...compile(parse(tokenize(source))), "HALT"]);
+
+run([...compile(parse(tokenize("print(3 * 3)"))), "HALT"]);
