@@ -1,3 +1,5 @@
+// VM
+
 type Inst = "PUSH" | "ADD" | "MUL" | "PRINT" | "HALT";
 type Bytecode = (number | Inst)[];
 type Stack = (number | Inst)[];
@@ -33,6 +35,8 @@ run([
   "PRINT",
   "HALT"
 ]);
+
+// AST
 
 type AST = Expression | Print;
 
@@ -107,6 +111,8 @@ const code: Bytecode = [
 ];
 
 run(code);
+
+// Parser
 
 type Token =
   | NumberToken
@@ -263,6 +269,8 @@ const tokens: Token[] = [
 ];
 
 run([...compile(parse(tokens)), "HALT"]);
+
+// Lexer
 
 function tokenize(source: string): Token[] {
   const tokens: Token[] = [];
