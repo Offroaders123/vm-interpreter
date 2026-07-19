@@ -1,10 +1,10 @@
 // VM
 
 type Inst = "PUSH" | "ADD" | "MUL" | "PRINT" | "HALT";
-type Bytecode = (number | Inst)[];
+export type Bytecode = (number | Inst)[];
 type Stack = (number | Inst)[];
 
-function run(bytecode: Bytecode) {
+export function run(bytecode: Bytecode) {
   const stack: Stack = [];
   let ip: number = 0;
 
@@ -30,7 +30,7 @@ function run(bytecode: Bytecode) {
 
 // AST
 
-type AST = Expression | Print;
+export type AST = Expression | Print;
 
 type Expression = Number | BinaryExpression;
 
@@ -51,7 +51,7 @@ interface Print {
   value: Number | BinaryExpression;
 }
 
-function compile(ast: AST): Bytecode {
+export function compile(ast: AST): Bytecode {
   switch (ast.type) {
     case "Number":
       return ["PUSH", ast.value];
@@ -83,7 +83,7 @@ function compile(ast: AST): Bytecode {
 
 // Parser
 
-type Token =
+export type Token =
   | NumberToken
   | IdentifierToken
   | PlusToken
@@ -117,7 +117,7 @@ interface RParenToken {
   type: "RPAREN";
 }
 
-function parse(tokens: Token[]): AST {
+export function parse(tokens: Token[]): AST {
   let position: number = 0;
 
   return parse();
@@ -230,7 +230,7 @@ function parse(tokens: Token[]): AST {
 
 // Lexer
 
-function tokenize(source: string): Token[] {
+export function tokenize(source: string): Token[] {
   const tokens: Token[] = [];
   let position: number = 0;
 

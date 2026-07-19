@@ -1,3 +1,5 @@
+import { type AST, type Bytecode, compile, parse, run, type Token, tokenize } from "../src/index.ts";
+
 // VM
 
 run([

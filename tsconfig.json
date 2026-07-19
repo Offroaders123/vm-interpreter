@@ -3,6 +3,7 @@
     "module": "nodenext",
     "target": "esnext",
     "isolatedModules": true,
+    "allowImportingTsExtensions": true,
     "noEmit": true,
     "strict": true,
     "noImplicitOverride": true,
