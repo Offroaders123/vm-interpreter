@@ -6,7 +6,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "test": "node --watch ./src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
