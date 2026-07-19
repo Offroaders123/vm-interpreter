@@ -1,20 +1,22 @@
+import { type Bytecode } from "./vm.ts";
+
 export type AST = Expression | Print;
 
-type Expression = Number | BinaryExpression;
+export type Expression = Number | BinaryExpression;
 
-interface Number {
+export interface Number {
   type: "Number";
   value: number;
 }
 
-interface BinaryExpression {
+export interface BinaryExpression {
   type: "BinaryExpression";
   operator: "Add" | "Multiply";
   left: Number;
   right: Number;
 }
 
-interface Print {
+export interface Print {
   type: "Print";
   value: Number | BinaryExpression;
 }

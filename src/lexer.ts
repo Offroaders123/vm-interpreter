@@ -1,3 +1,5 @@
+import { type IdentifierToken, type NumberToken, type Token } from "./parser.ts";
+
 export function tokenize(source: string): Token[] {
   const tokens: Token[] = [];
   let position: number = 0;

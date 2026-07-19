@@ -1,3 +1,5 @@
+import { type AST, type BinaryExpression, type Number, type Print } from "./ast.ts";
+
 export type Token =
   | NumberToken
   | IdentifierToken
@@ -6,29 +8,29 @@ export type Token =
   | LParenToken
   | RParenToken;
 
-interface NumberToken {
+export interface NumberToken {
   type: "NUMBER";
   value: number;
 }
 
-interface IdentifierToken {
+export interface IdentifierToken {
   type: "IDENTIFIER";
   value: string;
 }
 
-interface PlusToken {
+export interface PlusToken {
   type: "PLUS";
 }
 
-interface StarToken {
+export interface StarToken {
   type: "STAR";
 }
 
-interface LParenToken {
+export interface LParenToken {
   type: "LPAREN";
 }
 
-interface RParenToken {
+export interface RParenToken {
   type: "RPAREN";
 }
 
