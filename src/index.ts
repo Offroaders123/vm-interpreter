@@ -31,22 +31,25 @@ run([
   "HALT"
 ]);
 
-type AST = Number | Add | Print;
+type AST = Expression | Print;
+
+type Expression = Number | BinaryExpression;
 
 interface Number {
   type: "Number";
   value: number;
 }
 
-interface Add {
-  type: "Add";
+interface BinaryExpression {
+  type: "BinaryExpression";
+  operator: "Add";
   left: Number;
   right: Number;
 }
 
 interface Print {
   type: "Print";
-  value: Number | Add;
+  value: Number | BinaryExpression;
 }
 
 function compile(ast: AST): Bytecode {
@@ -54,12 +57,15 @@ function compile(ast: AST): Bytecode {
     case "Number":
       return ["PUSH", ast.value];
 
-    case "Add":
-      return [
-        ...compile(ast.left),
-        ...compile(ast.right),
-        "ADD"
-      ];
+    case "BinaryExpression":
+      switch (ast.operator) {
+        case "Add":
+          return [
+            ...compile(ast.left),
+            ...compile(ast.right),
+            "ADD"
+          ];
+      }
 
     case "Print":
       return [
@@ -72,7 +78,8 @@ function compile(ast: AST): Bytecode {
 const ast: AST = {
   type: "Print",
   value: {
-    type: "Add",
+    type: "BinaryExpression",
+    operator: "Add",
     left: {
       type: "Number",
       value: 5
@@ -142,16 +149,17 @@ function parse(tokens: Token[]): AST {
     };
   }
 
-  function parseAdd(): Add {
-    let left: Number | Add = parsePrimary() as Number;
+  function parseBinaryExpression(): BinaryExpression {
+    let left: Number | BinaryExpression = parsePrimary() as Number;
 
     while (peek().type === "PLUS") {
       advance();
 
-      const right: Number | Add = parsePrimary() as Number;
+      const right: Number | BinaryExpression = parsePrimary() as Number;
 
       left = {
-        type: "Add",
+        type: "BinaryExpression",
+        operator: "Add",
         left,
         right
       };
@@ -162,7 +170,7 @@ function parse(tokens: Token[]): AST {
     throw new Error("NEEDS HANDLING NOW 👹"); // temp
   }
 
-  function parsePrimary(): Number | Add {
+  function parsePrimary(): Number | BinaryExpression {
     const token = peek();
 
     if (token.type === "NUMBER") {
@@ -172,7 +180,7 @@ function parse(tokens: Token[]): AST {
     if (token.type === "LPAREN") {
       advance(); // consume (
 
-      const expression: Add = parseAdd();
+      const expression: BinaryExpression = parseBinaryExpression();
 
       if (peek().type !== "RPAREN") {
         throw new Error("Expected ')'");
@@ -191,7 +199,7 @@ function parse(tokens: Token[]): AST {
 
     advance(); // consume (
 
-    const value: Add = parseAdd();
+    const value: BinaryExpression = parseBinaryExpression();
 
     advance(); // consume )
 
