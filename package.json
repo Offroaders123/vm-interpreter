@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "node --watch ./src/index.ts"
+    "test": "node --watch ./test/index.test.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
